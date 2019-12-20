@@ -1,6 +1,7 @@
 import pandas as pd
 
 """
+python3
 读csv
 增加一列自增列 
 输出行数列数

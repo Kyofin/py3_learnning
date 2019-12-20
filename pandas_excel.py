@@ -1,6 +1,7 @@
 import pandas as pd
 
 '''
+python3
     该函数主要的参数为io、sheetname、header、names、encoding。
     io:excel文件，可以是文件路径、文件网址、file-like对象、xlrd workbook;
     sheetname:返回指定的sheet，参数可以是字符串（sheet名）、整型（sheet索引）、list（元素为字符串和整型，返回字典{'key':'sheet'}）、none（返回字典，全部sheet）;
