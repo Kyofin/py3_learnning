@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+'''
+使用python2
+操控wechat
+'''
 import sys 
 reload(sys) 
 sys.setdefaultencoding('utf-8') 
