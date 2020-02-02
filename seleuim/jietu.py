@@ -12,7 +12,7 @@ driver.maximize_window()
 driver.get("https://weread.qq.com/web/reader/cf1320d071a1a78ecf19254k16732dc0161679091c5aeb1")
 
 # 截图（chrome只能截当前屏幕看到的）
-driver.save_screenshot("/Volumes/Samsung_T5/huzekang/py_code/py-learnning/app1.png")
+driver.save_screenshot("dangqianping.png")
 
 # 关闭浏览器
 driver.close()

@@ -28,7 +28,7 @@ driver.get("https://weread.qq.com/web/reader/cf1320d071a1a78ecf19254ke4d32d5015e
 driver.delete_all_cookies()
 
 # 从文件加载cookie
-cookiesFile = '/Volumes/Samsung_T5/huzekang/py_code/py-learnning/selenium/cookies.txt'
+cookiesFile = '/Volumes/Samsung_T5/huzekang/py_code/py-learnning/seleuim/cookies.txt'
 
 with open('%s' % cookiesFile, 'r') as cookief:
     # 使用json读取cookies 注意读取的是文件 所以用load而不是loads
