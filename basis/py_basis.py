@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+python3语法学习
+'''
 import sys  # 要重新载入sys。因为 Python 初始化后会删除 sys.setdefaultencoding 这个方 法
 reload(sys)
 sys.setdefaultencoding('utf-8')
