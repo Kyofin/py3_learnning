@@ -16,7 +16,7 @@ driver.get("https://weread.qq.com/web/reader/cf1320d071a1a78ecf19254k16732dc0161
 time.sleep(20)
 
 # 保存cookie到外部文件
-cookiesFile = '/Volumes/Samsung_T5/huzekang/py_code/py-learnning/seleuim/cookies.txt'
+cookiesFile = '/Volumes/Samsung_T5/huzekang/py_code/py-learnning/selenium/cookies.txt'
 with open('%s' % cookiesFile, 'w') as cookief:
     # 将cookies保存为json格式
     print(json.dumps(driver.get_cookies()))
