@@ -5,11 +5,12 @@ import phoenixdb.cursor
 '''
 database_url = 'http://129.28.191.99:8765/'
 conn = phoenixdb.connect(database_url, autocommit=True)
-
 cursor = conn.cursor()
+# ddl
 cursor.execute("DROP TABLE users ")
 cursor.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username VARCHAR)")
-# 如果对应PRIMARY KEY有数据就更新，没就修改
+
+# dml 如果对应PRIMARY KEY有数据就更新，没就插入一条
 cursor.execute("UPSERT INTO users VALUES (?, ?)", (1, 'admin'))
 cursor.execute("SELECT * FROM users")
 print(cursor.fetchall())
