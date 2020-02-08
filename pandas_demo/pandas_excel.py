@@ -12,7 +12,7 @@ python3
 '''
 import pandas as pd
 # 读excel
-excel_path = '/System/Volumes/Data/Users/huzekang/Documents/朝阳医院2018年销售数据.xlsx'
+excel_path = '/Volumes/Samsung_T5/huzekang/数据集/朝阳医院2018年销售数据.xlsx'
 df = pd.read_excel(excel_path, sheetname=None)
 print(df)
 # 写出excel 结果如图：![](https://i.loli.net/2019/11/28/KqhMWX8PTpURzJb.png)
