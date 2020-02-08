@@ -1,4 +1,4 @@
-# 常用的python脚本
+# 常用的python3脚本
 
 ## pandas
 - pandas_csv.py
