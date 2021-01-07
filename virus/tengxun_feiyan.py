@@ -27,6 +27,24 @@ def get_city_feiyan_data(province, city):
     return r.text
 
 
+# 获取病人路途追踪
+def get_patient_track_data():
+    # request 请求
+    headers = {'Content-Type': 'application/json;charset=utf-8'}
+    all_track_list = []
+    page_index = 0
+    while True:
+        url = "https://pacaio.match.qq.com/virus/trackList?page=" + str(page_index) + "&num=1000"
+        r = requests.get(url, headers=headers)
+        one_page_track_list = json.loads(r.text)['data']['list']
+        if len(one_page_track_list) == 0:
+            break
+        # 一页中所有元素追加到one_page_track_list
+        all_track_list.extend(one_page_track_list)
+        page_index += 1
+    return all_track_list
+
+
 # 根据省份获取城市名列表
 def get_province_cities(province):
     # print("正在获取" + province + "的城市列表")
@@ -139,3 +157,14 @@ if __name__ == '__main__':
     file_object.writelines("\n".join(province_city_mapping_data))
     file_object.close()
     print("========== 结束爬取中国城市新冠肺炎数据 ==========")
+
+    print("========== 开始爬取新冠肺炎病人行径数据 ==========")
+    track_list_data = get_patient_track_data()
+    track_json_str_list=[]
+    for i in range(len(track_list_data)):
+        track_json_str_list.append(json.dumps(track_list_data[i],sort_keys=True, ensure_ascii=False))
+    # 写出新冠肺炎病人行径数据
+    file_object = open('feiyan_track_info.txt', 'w')
+    file_object.writelines("\n".join(track_json_str_list))
+    file_object.close()
+    print("========== 结束爬取新冠肺炎病人行径数据 ==========")
