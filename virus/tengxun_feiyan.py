@@ -76,6 +76,25 @@ def get_province_cities(province):
     # print(len(city_list))
     return city_list
 
+# 获取国外新冠数据
+def get_foreign_feiyan_data(country):
+    url = "https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=" + country
+    r = requests.get(url)
+    foreign_list = json.loads(r.text)['data']
+    if foreign_list is None:
+        return
+    # 填充国家字段
+    for i in range(len(foreign_list)):
+        foreign_list[i]['country'] = country
+    return foreign_list
+
+
+def get_country_dict():
+    url = "https://api.inews.qq.com/newsqa/v1/automation/modules/list?modules=FAutoforeignList"
+    r = requests.get(url)
+    foreign_list = json.loads(r.text)['data']['FAutoforeignList']
+    return foreign_list
+
 
 if __name__ == '__main__':
     # get_province_city("重庆")
@@ -117,6 +136,23 @@ if __name__ == '__main__':
         "宁夏",
         "新疆"
     ]
+
+    countries = get_country_dict()
+
+    print("========== 开始爬取国外新冠肺炎数据 ==========")
+    country_data_json_str_list = []
+    for country in countries:
+        country_data_list = get_foreign_feiyan_data(country['name'])
+        for item in country_data_list:
+            # 填充洲字段
+            item['continent']=country['continent']
+            item_json_str = json.dumps(item, sort_keys=True, ensure_ascii=False)
+            country_data_json_str_list.append(item_json_str)
+    # 写出国外新冠数据
+    file_object = open('foreign_feiyan_info.txt', 'w')
+    file_object.writelines("\n".join(country_data_json_str_list))
+    file_object.close()
+    print("========== 结束爬取国外新冠肺炎数据 ==========")
 
     print("========== 开始爬取中国省份新冠肺炎数据 ==========")
     all_provinces = provinces + provinces2
@@ -160,9 +196,9 @@ if __name__ == '__main__':
 
     print("========== 开始爬取新冠肺炎病人行径数据 ==========")
     track_list_data = get_patient_track_data()
-    track_json_str_list=[]
+    track_json_str_list = []
     for i in range(len(track_list_data)):
-        track_json_str_list.append(json.dumps(track_list_data[i],sort_keys=True, ensure_ascii=False))
+        track_json_str_list.append(json.dumps(track_list_data[i], sort_keys=True, ensure_ascii=False))
     # 写出新冠肺炎病人行径数据
     file_object = open('feiyan_track_info.txt', 'w')
     file_object.writelines("\n".join(track_json_str_list))
