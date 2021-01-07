@@ -7,6 +7,8 @@ python3
 import json
 import requests
 from xpinyin import Pinyin
+import datetime
+import os
 
 pinyin = Pinyin()
 
@@ -76,6 +78,7 @@ def get_province_cities(province):
     # print(len(city_list))
     return city_list
 
+
 # 获取国外新冠数据
 def get_foreign_feiyan_data(country):
     url = "https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=" + country
@@ -97,6 +100,13 @@ def get_country_dict():
 
 
 if __name__ == '__main__':
+    scheduler_time = datetime.datetime.now().strftime('%Y-%m-%d')
+    output_path = "/Users/huzekang/study/py3_learnning/out/" + scheduler_time + "/"
+    # 创建输出目录
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+
+    print("调度时间：" + scheduler_time)
     # get_province_city("重庆")
     # 没有市区的省份字典
     provinces = ["北京",
@@ -145,11 +155,11 @@ if __name__ == '__main__':
         country_data_list = get_foreign_feiyan_data(country['name'])
         for item in country_data_list:
             # 填充洲字段
-            item['continent']=country['continent']
+            item['continent'] = country['continent']
             item_json_str = json.dumps(item, sort_keys=True, ensure_ascii=False)
             country_data_json_str_list.append(item_json_str)
     # 写出国外新冠数据
-    file_object = open('foreign_feiyan_info.txt', 'w')
+    file_object = open(output_path + 'foreign_feiyan_info.txt', 'w')
     file_object.writelines("\n".join(country_data_json_str_list))
     file_object.close()
     print("========== 结束爬取国外新冠肺炎数据 ==========")
@@ -162,7 +172,7 @@ if __name__ == '__main__':
         for o in data['data']:
             province_json_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
     # 写省份肺炎数据文件
-    file_object = open('province_feiyan_info.txt', 'w')
+    file_object = open(output_path + 'province_feiyan_info.txt', 'w')
     file_object.writelines("\n".join(province_json_data))
     file_object.close()
     print("========== 结束爬取中国省份新冠肺炎数据 ==========")
@@ -185,11 +195,11 @@ if __name__ == '__main__':
             else:
                 print(province_name + "-" + city_name_alias + " 没有获取到新冠肺炎数据")
     # 写出城市肺炎数据文件
-    file_object = open('city_feiyan_info.txt', 'w')
+    file_object = open(output_path + 'city_feiyan_info.txt', 'w')
     file_object.writelines("\n".join(city_feiyan_data))
     file_object.close()
     # 写出城市身份映射关系文件
-    file_object = open('province_city_mapping.txt', 'w')
+    file_object = open(output_path + 'province_city_mapping.txt', 'w')
     file_object.writelines("\n".join(province_city_mapping_data))
     file_object.close()
     print("========== 结束爬取中国城市新冠肺炎数据 ==========")
@@ -200,7 +210,7 @@ if __name__ == '__main__':
     for i in range(len(track_list_data)):
         track_json_str_list.append(json.dumps(track_list_data[i], sort_keys=True, ensure_ascii=False))
     # 写出新冠肺炎病人行径数据
-    file_object = open('feiyan_track_info.txt', 'w')
+    file_object = open(output_path + 'feiyan_track_info.txt', 'w')
     file_object.writelines("\n".join(track_json_str_list))
     file_object.close()
     print("========== 结束爬取新冠肺炎病人行径数据 ==========")
