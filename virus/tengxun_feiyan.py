@@ -28,7 +28,7 @@ def get_city_feiyan_data(province, city):
 
 
 # 根据省份获取城市名列表
-def get_province_city(province):
+def get_province_cities(province):
     # print("正在获取" + province + "的城市列表")
     province_pin_yin = pinyin.get_pinyin(province, '')
     # 修正重庆的拼音
@@ -48,9 +48,13 @@ def get_province_city(province):
     for i in range(len(city_arr)):
         city_name = city_arr[i]['properties']['name']
         # 去除市
+        city_name_alias = city_name
         if city_name.endswith("市"):
-            city_name = city_name[:-1]
-        city_list.append({'province': province, 'city': city_name})
+            city_name_alias = city_name[:-1]
+        city_list.append({'province': province,
+                          'province_pin_yin': province_pin_yin,
+                          'city': city_name,
+                          'city_name_alias': city_name_alias})
     # print(len(city_list))
     return city_list
 
@@ -103,27 +107,35 @@ if __name__ == '__main__':
         data = json.loads(get_province_feiyan_data(i))
         for o in data['data']:
             province_json_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
-    # 写出文件
+    # 写省份肺炎数据文件
     file_object = open('province_feiyan_info.txt', 'w')
     file_object.writelines("\n".join(province_json_data))
     file_object.close()
     print("========== 结束爬取中国省份新冠肺炎数据 ==========")
 
-    print("========== 爬取中国城市新冠肺炎数据 ==========")
-    city_json_data = []
+    print("========== 开始爬取中国城市新冠肺炎数据 ==========")
+    city_feiyan_data = []
+    province_city_mapping_data = []
     for i in provinces2:
-        citys = get_province_city(i)
-        # print(citys)
-        for i in citys:
+        cities = get_province_cities(i)
+        for i in cities:
+            # 记录省份和城市的映射关系
+            province_city_mapping_data.append(json.dumps(i, sort_keys=True, ensure_ascii=False))
+            # 获取城市肺炎的数据
             province_name = i['province']
-            city_name = i['city']
-            data = json.loads(get_city_feiyan_data(province_name, city_name))
-            if data['data'] != None:
+            city_name_alias = i['city_name_alias']
+            data = json.loads(get_city_feiyan_data(province_name, city_name_alias))
+            if data['data'] is not None:
                 for o in data['data']:
-                    city_json_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
+                    city_feiyan_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
             else:
-                print(province_name+"-"+city_name+" 没有获取到新冠肺炎数据")
-    # 写出文件
+                print(province_name + "-" + city_name_alias + " 没有获取到新冠肺炎数据")
+    # 写出城市肺炎数据文件
     file_object = open('city_feiyan_info.txt', 'w')
-    file_object.writelines("\n".join(city_json_data))
+    file_object.writelines("\n".join(city_feiyan_data))
     file_object.close()
+    # 写出城市身份映射关系文件
+    file_object = open('province_city_mapping.txt', 'w')
+    file_object.writelines("\n".join(province_city_mapping_data))
+    file_object.close()
+    print("========== 结束爬取中国城市新冠肺炎数据 ==========")
