@@ -15,7 +15,7 @@ CREATE TABLE `feiyan_track_info`(
   `track` string,
   `user_name` string,
   `user_num` string)
-  partitioned by (ds string)STORED AS orc;
+  partitioned by (dt string)STORED AS orc;
 
 
   CREATE TABLE `province_city_mapping`(
@@ -23,7 +23,7 @@ CREATE TABLE `feiyan_track_info`(
   `city_name_alias` string,
   `province` string,
   `province_pin_yin` string)
-    partitioned by (ds string)STORED AS orc;
+    partitioned by (dt string)STORED AS orc;
 
 
 CREATE TABLE `city_feiyan_info`(
@@ -34,7 +34,7 @@ CREATE TABLE `city_feiyan_info`(
   `dead` bigint,
   `heal` bigint,
   `suspect` bigint,
-  `y` string) partitioned by (ds string)STORED AS orc;
+  `y` string) partitioned by (dt string)STORED AS orc;
 
 
   CREATE TABLE `foreign_feiyan_info`(
@@ -46,7 +46,7 @@ CREATE TABLE `city_feiyan_info`(
   `dead` bigint,
   `heal` bigint,
   `y` string)
-  partitioned by (ds string)STORED AS orc;
+  partitioned by (dt string)STORED AS orc;
 
 
 CREATE TABLE `province_feiyan_info`(
@@ -68,4 +68,4 @@ CREATE TABLE `province_feiyan_info`(
   `wzz` bigint,
   `wzz_add` bigint,
   `year` bigint)
-    partitioned by (ds string)STORED AS orc;
+    partitioned by (dt string)STORED AS orc;
