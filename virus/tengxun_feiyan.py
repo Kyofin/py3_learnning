@@ -9,8 +9,11 @@ import requests
 from xpinyin import Pinyin
 import datetime
 import os
+from hdfs.client import Client
 
 pinyin = Pinyin()
+hdfs_client = Client("http://10.93.6.7:50070/")
+
 
 
 def get_province_feiyan_data(province):
@@ -44,6 +47,7 @@ def get_patient_track_data():
         # 一页中所有元素追加到one_page_track_list
         all_track_list.extend(one_page_track_list)
         page_index += 1
+    print("已获取病人路径" + str(len(all_track_list)) + "条数据")
     return all_track_list
 
 
@@ -89,6 +93,7 @@ def get_foreign_feiyan_data(country):
     # 填充国家字段
     for i in range(len(foreign_list)):
         foreign_list[i]['country'] = country
+    print("已获取" + country + "共" + str(len(foreign_list)) + "条数据")
     return foreign_list
 
 
@@ -99,9 +104,17 @@ def get_country_dict():
     return foreign_list
 
 
+def callback(filename, size):
+    print(filename, "完成了一个chunk上传", "当前大小:", size)
+    if size == -1:
+        print(filename+"文件上传完成")
+
+
 if __name__ == '__main__':
     scheduler_time = datetime.datetime.now().strftime('%Y-%m-%d')
     output_path = "/Users/huzekang/study/py3_learnning/out/" + scheduler_time + "/"
+    hdfs_path = "/data/feiyan"
+
     # 创建输出目录
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -169,7 +182,9 @@ if __name__ == '__main__':
     province_json_data = []
     for i in all_provinces:
         data = json.loads(get_province_feiyan_data(i))
-        for o in data['data']:
+        province_feiyan_data_list = data['data']
+        print("已获取省份" + i + str(len(province_feiyan_data_list)) + "条数据")
+        for o in province_feiyan_data_list:
             province_json_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
     # 写省份肺炎数据文件
     file_object = open(output_path + 'province_feiyan_info.txt', 'w')
@@ -189,8 +204,10 @@ if __name__ == '__main__':
             province_name = i['province']
             city_name_alias = i['city_name_alias']
             data = json.loads(get_city_feiyan_data(province_name, city_name_alias))
-            if data['data'] is not None:
-                for o in data['data']:
+            city_feiyan_data_list = data['data']
+            if city_feiyan_data_list is not None:
+                print("已获取" + province_name + city_name_alias + str(len(city_feiyan_data_list)) + "条数据")
+                for o in city_feiyan_data_list:
                     city_feiyan_data.append(json.dumps(o, sort_keys=True, ensure_ascii=False))
             else:
                 print(province_name + "-" + city_name_alias + " 没有获取到新冠肺炎数据")
@@ -214,3 +231,8 @@ if __name__ == '__main__':
     file_object.writelines("\n".join(track_json_str_list))
     file_object.close()
     print("========== 结束爬取新冠肺炎病人行径数据 ==========")
+
+    print("========== 开始上传爬取数据到hdfs ==========")
+    # 上传成功返回 hdfs_path
+    hdfs_client.upload(hdfs_path=hdfs_path, local_path=output_path, chunk_size=2 << 19, progress=callback, cleanup=True)
+    print("========== 结束上传爬取数据到hdfs ==========")
