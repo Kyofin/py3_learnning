@@ -15,7 +15,6 @@ pinyin = Pinyin()
 hdfs_client = Client("http://10.93.6.7:50070/")
 
 
-
 def get_province_feiyan_data(province):
     headers = {'Content-Type': 'application/json;charset=utf-8'}
     url = 'https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?province=' + province
@@ -107,13 +106,13 @@ def get_country_dict():
 def callback(filename, size):
     print(filename, "完成了一个chunk上传", "当前大小:", size)
     if size == -1:
-        print(filename+"文件上传完成")
+        print(filename + "文件上传完成")
 
 
 if __name__ == '__main__':
     scheduler_time = datetime.datetime.now().strftime('%Y-%m-%d')
     output_path = "/Users/huzekang/study/py3_learnning/out/" + scheduler_time + "/"
-    hdfs_path = "/data/feiyan"
+    hdfs_path = "/data/feiyan/" + scheduler_time
 
     # 创建输出目录
     if not os.path.exists(output_path):
@@ -233,6 +232,17 @@ if __name__ == '__main__':
     print("========== 结束爬取新冠肺炎病人行径数据 ==========")
 
     print("========== 开始上传爬取数据到hdfs ==========")
+    # 检查目录是否存在
+    hdfs_path_status = hdfs_client.status(hdfs_path=hdfs_path, strict=False)
+    if hdfs_path_status is None:
+        # 不存在就创建目录
+        hdfs_client.makedirs(hdfs_path=hdfs_path, permission="755")
+    else:
+        # 存在删除
+        hdfs_client.delete(hdfs_path,recursive=True)
+
     # 上传成功返回 hdfs_path
-    hdfs_client.upload(hdfs_path=hdfs_path, local_path=output_path, chunk_size=2 << 19, progress=callback, cleanup=True)
+    hdfs_client.upload(hdfs_path=hdfs_path, local_path=output_path,
+                       chunk_size=2 << 25,
+                       progress=callback, cleanup=True)
     print("========== 结束上传爬取数据到hdfs ==========")
